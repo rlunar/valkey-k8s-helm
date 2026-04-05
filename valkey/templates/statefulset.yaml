@@ -48,6 +48,9 @@ spec:
         {{- if .Values.valkeyConfig }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum | trunc 32 | quote }}
         {{- end }}
+        {{- if and .Values.auth.enabled (or (eq (include "valkey.hasInlinePasswords" .) "true") .Values.auth.aclConfig) }}
+        checksum/auth-secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum | trunc 32 | quote }}
+        {{- end }}
     spec:
       {{- (include "valkey.imagePullSecrets" .) | nindent 6 }}
       automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
